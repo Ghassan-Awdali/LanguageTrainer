@@ -63,4 +63,4 @@ class AudioManager():
 #test = AudioManager()       
 #record_mic(3,"my_recordings\mic_record.wav")
 #print(test.get_aud_length("my_recordings\mic_record.wav"))
-#test.create_wav_img("my_recordings\mic_record.wav","my_recordings\mic_waveform.png")
+#test.create_wav_img("my_recordings\mic_record.wav","mic_waveform.png")
