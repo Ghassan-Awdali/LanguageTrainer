@@ -7,6 +7,11 @@ import time
 import os
 import send2trash
 import threading
+from scipy import signal
+import matplotlib.pyplot as plt
+import numpy as np
+import sounddevice as sd
+import soundfile as sf
 
 
 
@@ -182,6 +187,47 @@ class App():
             self.CLOCK.tick(self.FPS)
         
         pg.quit()
+
+    def handle_events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.RUNNING = False
+            
+            # Handle mouse clicks
+            if event.type == pg.MOUSEBUTTONDOWN:
+                # Check if mic button was clicked
+                if self.mic_button_rect.collidepoint(event.pos):
+                    self.record_user_audio()
+            
+            # Handle audio finished event
+            if event.type == self.AUD_FIN_EVENT:
+                self.AUD_FINISHED = True
+                self.PLAYING_AUD = False
+
+    def draw(self):
+        # Draw background
+        self.WIN.fill(DARK_GRAY)
+        
+        # Draw reference audio spectrogram if available
+        if self.REF_IMG:
+            self.WIN.blit(self.REF_IMG, self.REF_IMG.get_rect(center=self.AUD_IMG_CENTER))
+        
+        # Draw user audio spectrogram if available
+        if self.OUT_AUD_IMG:
+            self.WIN.blit(self.OUT_AUD_IMG, self.OUT_AUD_IMG_RECT)
+        
+        # Draw microphone button
+        mic_img = pg.image.load(os.path.join(self.WAV_IMG_REF_FLDER, "mic_record.png"))
+        self.mic_button_rect = mic_img.get_rect(center=(self.WIN_X//2, self.WIN_Y - 100))
+        self.WIN.blit(mic_img, self.mic_button_rect)
+        
+        # Draw recording indicator if recording
+        if self.IS_RECORDING:
+            recording_text = self.FONT.render("Recording...", True, RED)
+            self.WIN.blit(recording_text, (self.WIN_X//2 - recording_text.get_width()//2, 
+                                          self.WIN_Y - 150))
+        
+        pg.display.update()
 
 if __name__ == "__main__":
     app = App()
